@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>After the Mistake</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HOME HUB -->
+  <section class="screen active" id="home">
+    <h1>What’s going on right now?</h1>
+
+    <button onclick="go('regretStart')">
+      I never should have done that
+      <div class="smallText">Stuck replaying a past decision</div>
+    </button>
+
+    <button onclick="go('overwhelmed')">
+      I’m feeling overwhelmed
+      <div class="smallText">Too much at once</div>
+    </button>
+
+    <button class="secondary" onclick="go('journal')">
+      Journal
+      <div class="smallText">Write without fixing</div>
+    </button>
+
+    <button class="secondary" onclick="go('writing')">My writing</button>
+    <button class="secondary" onclick="go('history')">View history</button>
+    <button class="secondary" onclick="go('anchors')">Anchors</button>
+  </section>
+
+  <!-- REGRET FLOW START (was your old s1) -->
+  <section class="screen" id="regretStart">
+    <h1>Stuck on<br>“I should never have done that”?</h1>
+
+    <label class="smallLabel">Optional: what’s the thought?</label>
+    <input id="thought" class="textInput" placeholder="One sentence is enough" />
+
+    <label class="smallLabel">Intensity right now: <span id="intBeforeVal">5</span>/10</label>
+    <input id="intBefore" type="range" min="0" max="10" value="5"
+           oninput="document.getElementById('intBeforeVal').innerText=this.value"/>
+
+    <button onclick="startYes()">Yes — that’s it</button>
+    <button class="secondary" onclick="go('home')">Back</button>
+  </section>
+
+  <!-- OVERWHELMED (screen only; hook it up however you want in JS) -->
+  <section class="screen" id="overwhelmed">
+    <h2>Let’s make this smaller.</h2>
+    <p class="smallText">Pick the smallest thing that helps right now.</p>
+
+    <button onclick="selectLane('Stabilizing')">Ground my body</button>
+    <button onclick="selectLane('Relieving')">Quiet my mind</button>
+    <button onclick="selectLane('Rest')">Stop for now</button>
+
+    <button class="secondary" onclick="go('home')">Back</button>
+  </section>
+
+  <!-- JOURNAL (screen only; needs saveJournal() in JS if you want Save to work) -->
+  <section class="screen" id="journal">
+  <h2>Journal</h2>
+  <p class="smallText">No fixing. Just write.</p>
+
+  <textarea id="journalInput" class="textArea"
+    placeholder="Write whatever’s here…"></textarea>
+
+  <button class="secondary" onclick="openJournalExamples()">Need a prompt?</button>
+  <button onclick="saveJournal()">Save</button>
+  <button class="secondary" onclick="go('journalHistory')">View past entries</button>
+  <button class="secondary" onclick="go('home')">Back</button>
+</section>
+
+
+
+  <!-- SCREEN 2 (unchanged except back goes to regretStart) -->
+  <section class="screen" id="s2">
+    <h2>What’s happening right now</h2>
+    <p>
+      Your mind is replaying a past decision using information you only have now.
+      That replay feels urgent — but urgency is not information.
+    </p>
+    <button onclick="go('s3')">Continue</button>
+    <button class="secondary" onclick="go('regretStart')">Back</button>
+  </section>
+
+  <!-- SCREEN 3 -->
+  <section class="screen" id="s3">
+    <h2>What kind of mistake does this feel like?</h2>
+
+    <button onclick="selectMistake('missed')">Missed opportunity</button>
+    <button onclick="selectMistake('career')">Career or money</button>
+    <button onclick="selectMistake('relationship')">Relationship</button>
+    <button onclick="selectMistake('health')">Health or body</button>
+    <button onclick="selectMistake('unknown')">I don’t know</button>
+
+    <button class="secondary" onclick="go('s2')">Back</button>
+  </section>
+
+  <!-- MISTAKE DETAIL -->
+  <section class="screen" id="mistakeDetail">
+    <h2 id="mistakeHeadline"></h2>
+    <p id="mistakeSubtext"></p>
+
+    <ul id="mistakeBullets"></ul>
+
+    <button onclick="go('nextstep')">Continue</button>
+    <button class="secondary" onclick="go('s3')">Back</button>
+  </section>
+
+  <!-- NEXT STEP SELECTOR -->
+  <section class="screen" id="nextstep">
+    <h2>What would help most right now?</h2>
+
+    <button onclick="selectLane('Productive')">Something productive</button>
+    <button onclick="selectLane('Stabilizing')">Something stabilizing</button>
+    <button onclick="selectLane('Relieving')">Something relieving</button>
+    <button onclick="selectLane('Rest')">Do nothing on purpose</button>
+
+    <button class="secondary" onclick="go('mistakeDetail')">Back</button>
+  </section>
+
+  <!-- STEP OPTIONS -->
+  <section class="screen" id="step">
+    <h2 id="stepHeadline"></h2>
+    <p id="stepBody"></p>
+    <ul id="stepList"></ul>
+
+    <button onclick="go('done')">Continue</button>
+    <button class="secondary" onclick="go('nextstep')">Back</button>
+  </section>
+
+  <!-- DONE -->
+  <section class="screen" id="done">
+    <h2>You don’t need to solve the past to move forward.</h2>
+
+    <label class="smallLabel">Intensity now: <span id="intAfterVal">3</span>/10</label>
+    <input id="intAfter" type="range" min="0" max="10" value="3"
+           oninput="document.getElementById('intAfterVal').innerText=this.value"/>
+
+    <div class="card">
+      <div class="smallLabel">Optional: add a note (private, on this device)</div>
+      <input id="note" class="textInput" placeholder="What helped? What triggered it?" />
+    </div>
+
+    <div class="card">
+      <div class="smallLabel">Personal anchor</div>
+      <div id="anchorDisplay" class="anchorText">Tap “Show” to pull one up.</div>
+
+      <div class="row">
+        <button class="secondary half" onclick="showAnchor()">Show</button>
+        <button class="secondary half" onclick="showAnchor(true)">Another</button>
+      </div>
+
+      <button class="secondary" onclick="go('anchors')">Edit anchors</button>
+    </div>
+
+    <button onclick="saveEntry()">Save this moment</button>
+    <button class="secondary" onclick="go('home')">Start over</button>
+  </section>
+
+<!--JOURNAL HISTORY-->
+
+<section class="screen" id="journalHistory">
+  <h2>Journal history</h2>
+  <p class="smallText">Saved locally on this device.</p>
+
+  <div id="journalList" class="historyList"></div>
+
+  <button class="secondary" onclick="clearJournal()">Clear all</button>
+  <button onclick="go('journal')">Back</button>
+</section>
+
+  <!-- HISTORY -->
+  <section class="screen" id="history">
+    <h2>History</h2>
+    <p class="smallText">Saved locally on this device.</p>
+
+    <div id="historyList" class="historyList"></div>
+
+    <button onclick="clearHistory()" class="secondary">Clear all</button>
+    <button onclick="go('home')">Back</button>
+  </section>
+
+  <!-- MY WRITING -->
+  <section class="screen" id="writing">
+    <h2>My writing</h2>
+    <p class="smallText">Saved locally on this device.</p>
+
+    <div id="writingList" class="historyList"></div>
+
+    <button onclick="clearWriting()" class="secondary">Clear all writing</button>
+    <button onclick="go('home')">Back</button>
+  </section>
+
+  <!-- ANCHORS -->
+  <section class="screen" id="anchors">
+    <h2>Anchors</h2>
+    <p class="smallText">Short lines that pull you out of the loop. Saved locally on this device.</p>
+
+    <div class="card">
+      <label class="smallLabel">Add a new anchor</label>
+      <input id="anchorInput" class="textInput" maxlength="140"
+             placeholder="e.g. Urgency is not information." />
+      <button onclick="addAnchor()">Add</button>
+    </div>
+
+    <div id="anchorsList" class="historyList"></div>
+
+    <button class="secondary" onclick="resetAnchors()">Reset to defaults</button>
+    <button onclick="go('home')">Back</button>
+  </section>
+
+  <!-- END -->
+  <section class="screen" id="end">
+    <h2>Come back when you need it.</h2>
+    <button onclick="go('home')">Home</button>
+  </section>
+
+</div>
+
+<!--JOURNAL EXAMPLE MODAL-->
+<div id="journalExamplesModal" class="modal">
+  <div class="modal-content">
+    <h3>Journal prompts</h3>
+    <p class="smallText">Use one if it helps. Ignore if it doesn’t.</p>
+
+    <ul id="journalExamplesList">
+      <li onclick="insertJournalExample(this)">
+        What’s looping in my mind right now?
+      </li>
+      <li onclick="insertJournalExample(this)">
+        What feels heavy that I haven’t named yet?
+      </li>
+      <li onclick="insertJournalExample(this)">
+        What am I avoiding thinking about?
+      </li>
+      <li onclick="insertJournalExample(this)">
+        What do I wish someone understood about this?
+      </li>
+      <li onclick="insertJournalExample(this)">
+        What do I need right now that I’m not giving myself?
+      </li>
+    </ul>
+
+    <button class="secondary" onclick="closeJournalExamples()">Close</button>
+  </div>
+</div>
+
+
+<!-- WRITER MODAL (generic) -->
+<div id="writerModal" class="modal">
+  <div class="modal-content">
+    <h3 id="writerTitle">Write</h3>
+    <p id="writerHelp" class="smallText"></p>
+
+    <textarea id="writerInput" class="textArea" placeholder=""></textarea>
+
+    <button onclick="saveWriter()">Save</button>
+    <button class="secondary" onclick="closeWriter()">Cancel</button>
+  </div>
+</div>
+
+
+<!-- INFO MODAL (bullets) -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <p id="modalText"></p>
+    <button onclick="closeModal()">Got it</button>
+  </div>
+</div>
+
+<!-- TIMER MODAL -->
+<div id="timerModal" class="modal">
+  <div class="modal-content">
+    <h3 id="timerTitle">Ground your body</h3>
+    <p id="timerHelp" class="smallText">Slow breath. No effort.</p>
+<div id="breathCue" style="font-size:18px; margin-bottom:8px;">Breathe in</div>
+
+    <div id="timerDisplay" style="font-size:32px; margin:16px 0;">60</div>
+
+    <button onclick="closeTimer()">Done</button>
+  </div>
+</div>
+
+
+
+<script>
+function openJournalExamples() {
+  document.getElementById('journalExamplesModal').style.display = 'flex';
+}
+
+function closeJournalExamples() {
+  document.getElementById('journalExamplesModal').style.display = 'none';
+}
+
+function insertJournalExample(el) {
+  const textarea = document.getElementById('journalInput');
+  if (!textarea) return;
+
+  const text = el.innerText;
+  textarea.value = textarea.value
+    ? textarea.value + "\n\n" + text + "\n"
+    : text + "\n";
+
+  textarea.focus();
+  closeJournalExamples();
+}
+
+
+let timerInterval = null;
+let timerRemaining = 0;
+let breathPhase = "in";
+let breathCount = 0;
+
+function openTimer(seconds, title, help) {
+  timerRemaining = seconds;
+  breathPhase = "in";
+  breathCount = 4;
+
+  document.getElementById("timerTitle").innerText = title || "Pause";
+  document.getElementById("timerHelp").innerText = help || "";
+  document.getElementById("timerDisplay").innerText = timerRemaining;
+  document.getElementById("breathCue").innerText = "Breathe in";
+
+  document.getElementById("timerModal").style.display = "flex";
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    // countdown timer
+    timerRemaining--;
+    document.getElementById("timerDisplay").innerText = timerRemaining;
+
+    // breathing cue countdown
+    breathCount--;
+    document.getElementById("breathCue").innerText =
+      `Breathe ${breathPhase} (${breathCount})`;
+
+    if (breathCount <= 0) {
+      if (breathPhase === "in") {
+        breathPhase = "out";
+        breathCount = 6;
+        document.getElementById("breathCue").innerText = "Breathe out (6)";
+      } else {
+        breathPhase = "in";
+        breathCount = 4;
+        document.getElementById("breathCue").innerText = "Breathe in (4)";
+      }
+    }
+
+    if (timerRemaining <= 0) {
+      clearInterval(timerInterval);
+      document.getElementById("breathCue").innerText = "Done";
+    }
+  }, 1000);
+}
+
+function closeTimer() {
+  clearInterval(timerInterval);
+  document.getElementById("timerModal").style.display = "none";
+}
+
+
+const WRITING_KEYS = ["atm_boundaries","atm_messages","atm_questions","atm_lines","atm_writes"];
+
+function renderWriting() {
+  const el = document.getElementById("writingList");
+  if (!el) return;
+
+  let items = [];
+  WRITING_KEYS.forEach(k => {
+    try {
+      const arr = JSON.parse(localStorage.getItem(k) || "[]");
+      if (Array.isArray(arr)) items = items.concat(arr.map(x => ({...x, _key: k})));
+    } catch {}
+  });
+
+  items.sort((a,b) => (b.ts || "").localeCompare(a.ts || ""));
+
+  if (items.length === 0) {
+    el.innerHTML = `<div class="historyItem"><div class="main">Nothing saved yet.</div></div>`;
+    return;
+  }
+
+  el.innerHTML = items.slice(0, 100).map(x => {
+    const when = x.ts ? new Date(x.ts).toLocaleString() : "";
+    const title = x.title || x.type || x._key;
+    const meta = `${when} • ${escapeHtml(x.mistakeType || "")} • ${escapeHtml(x.lane || "")}`;
+    return `
+      <div class="historyItem">
+        <div class="meta">${meta}</div>
+        <div class="main"><b>${escapeHtml(title)}</b><br>${escapeHtml(x.text || "")}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+function clearWriting() {
+  WRITING_KEYS.forEach(k => localStorage.removeItem(k));
+  renderWriting();
+}
+
+
+let writerContext = null;
+
+function openWriter(ctx) {
+  writerContext = ctx;
+
+  document.getElementById("writerTitle").innerText = ctx.title || "Write";
+  document.getElementById("writerHelp").innerText = ctx.help || "";
+  document.getElementById("writerInput").value = ctx.prefill || "";
+  document.getElementById("writerInput").placeholder = ctx.placeholder || "";
+
+  document.getElementById("writerModal").style.display = "flex";
+}
+
+function closeWriter() {
+  document.getElementById("writerModal").style.display = "none";
+  writerContext = null;
+}
+
+function saveJournal() {
+  const el = document.getElementById("journalInput");
+  const text = (el?.value || "").trim();
+  if (!text) return;
+
+  const arr = JSON.parse(localStorage.getItem("atm_journal") || "[]");
+  arr.unshift({ ts: new Date().toISOString(), text });
+  localStorage.setItem("atm_journal", JSON.stringify(arr));
+
+  // clear + confirm
+  el.value = "";
+  alert("Saved ✓");
+
+  // optional: go back home after saving
+  // go('home');
+}
+
+
+function saveWriter() {
+  const text = document.getElementById("writerInput").value.trim();
+  if (!text || !writerContext) return;
+
+  const key = writerContext.saveKey || "atm_writes";
+  const arr = JSON.parse(localStorage.getItem(key) || "[]");
+
+  arr.unshift({
+    ts: new Date().toISOString(),
+    type: writerContext.type || "write",
+    title: writerContext.title || "Write",
+    text,
+    mistakeType: state.mistakeType || "Unspecified",
+    lane: state.lane || "Unspecified",
+    action: state.action || "Unspecified"
+  });
+
+  localStorage.setItem(key, JSON.stringify(arr));
+alert("Saved ✓");
+
+  closeWriter();
+
+
+}
+
+
+/* -------------------------
+   STATE + NAV
+-------------------------- */
+let state = {
+  mistakeKey: null,
+  mistakeType: null, // label for journaling
+  lane: null,
+  action: null
+};
+
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+
+  if (id === 'history') renderHistory();
+  if (id === 'anchors') renderAnchors();
+ if (id === 'journalHistory') renderJournal();
+if (id === 'writing') renderWriting();
+if (id === 'done') showAnchor(true);
+}
+
+function startYes() {
+  state.mistakeKey = null;
+  state.mistakeType = null;
+  state.lane = null;
+  state.action = null;
+  go('s2');
+}
+
+function chooseAction(action) {
+  state.action = action;
+}
+
+/* -------------------------
+   MISTAKES (data)
+-------------------------- */
+const MISTAKES = {
+  missed: {
+    label: "Missed opportunity",
+    headline: "Missed opportunities hurt because hindsight narrows the future.",
+    subtext: "When you look back, your mind collapses many possible paths into one “right” one.",
+    bullets: [
+      { text: "Hindsight makes outcomes feel inevitable", modal: "Looking backward removes uncertainty. That makes outcomes feel obvious — even when they weren’t. Certainty after the fact is not insight." },
+      { text: "You’re focusing on one path, not all paths", modal: "Regret spotlights one road you didn’t take and hides the paths that still exist. Narrow focus increases pain, not accuracy." },
+      { text: "Timing regret exaggerates certainty", modal: "“I should’ve acted sooner” assumes success was guaranteed. It rarely is. Risk only looks clean in hindsight." }
+    ]
+  },
+
+  career: {
+    label: "Career or money",
+    headline: "Career and money regret hits hard because it feels permanent.",
+    subtext: "This kind of regret is loud because it threatens safety, identity, and time.",
+    bullets: [
+      { text: "Most careers bend before they break", modal: "Careers are evaluated over decades, not moments. Most recoveries look like reroutes, not reversals." },
+      { text: "Financial fear exaggerates finality", modal: "Money pressure makes uncertainty feel permanent. Pressure is not proof." },
+      { text: "Hindsight makes the decision look obvious", modal: "You’re judging a past decision using information you only have now. That replay feels convincing, but it isn’t fair." }
+    ]
+  },
+
+  relationship: {
+    label: "Relationship",
+    headline: "Relationship regret mixes emotion with hindsight.",
+    subtext: "The mind tries to turn a complex situation into a single “wrong choice.”",
+    bullets: [
+      { text: "You’re judging past-you with present-you’s knowledge", modal: "You didn’t have today’s clarity then. The replay feels certain now because time removed the unknowns." },
+      { text: "One outcome doesn’t define the whole decision", modal: "Relationships are dynamic. A single ending doesn’t retroactively make every step “wrong.”" },
+      { text: "Regret often hides grief", modal: "Sometimes the pain isn’t “I chose wrong.” It’s “I lost something.” Those are different." }
+    ]
+  },
+
+  health: {
+    label: "Health or body",
+    headline: "Health regret is hard because perfect certainty doesn’t exist.",
+    subtext: "Most health choices are made with partial info, stress, and time pressure.",
+    bullets: [
+      { text: "Perfect information usually isn’t available", modal: "Health decisions are often made under uncertainty. Expecting a perfect choice is unrealistic." },
+      { text: "Capacity matters", modal: "You acted with the energy, resources, and support you had then — not what you wish you had." },
+      { text: "Regret spikes after outcomes show up", modal: "When results appear, the brain rewrites the past as if the outcome was obvious. That’s hindsight, not fairness." }
+    ]
+  },
+
+  unknown: {
+    label: "I don’t know",
+    headline: "Uncertainty often disguises itself as regret.",
+    subtext: "The brain wants closure, so it invents blame.",
+    bullets: [
+      { text: "Not knowing doesn’t mean you chose wrong", modal: "Ambiguity is uncomfortable. The mind sometimes calls it “mistake” to force certainty." },
+      { text: "You can act without total clarity", modal: "You don’t need the perfect interpretation to take a small next step." },
+      { text: "This is a state, not a verdict", modal: "Feeling stuck isn’t evidence of failure. It’s a signal you need containment and direction." }
+    ]
+  }
+};
+
+function selectMistake(key) {
+  state.mistakeKey = key;
+  state.mistakeType = MISTAKES[key]?.label || key;
+
+  const m = MISTAKES[key];
+  document.getElementById("mistakeHeadline").innerText = m.headline;
+  document.getElementById("mistakeSubtext").innerText = m.subtext;
+
+  const ul = document.getElementById("mistakeBullets");
+  ul.innerHTML = "";
+
+  m.bullets.forEach(b => {
+    const li = document.createElement("li");
+    li.innerText = b.text + " ›";
+    li.onclick = () => openModalText(b.modal);
+    ul.appendChild(li);
+  });
+
+  go("mistakeDetail");
+}
+
+/* -------------------------
+   STEPS (data)
+-------------------------- */
+const STEPS = {
+  missed: {
+    Productive: [
+      "Take one small action you’ve been avoiding",
+      {
+  text: "Write one sentence: what’s the next best move now?",
+  action: "write",
+  writer: {
+    type: "next_move",
+    saveKey: "atm_lines",
+    title: "Next best move",
+    help: "One sentence. No perfect plan required.",
+    placeholder: "The next best move is…",
+    prefill: "The next best move is "
+  }
+},
+
+      "Do one 5-minute task that creates momentum"
+    ],
+    Stabilizing: [
+      "Walk for 5 minutes",
+      "Drink water / eat something",
+      {
+  text: "Ground your body: slow breath for 60 seconds",
+  action: "timer",
+  timer: {
+    seconds: 60,
+    title: "Slow breath",
+    help: "Inhale gently. Exhale longer."
+  }
+},
+
+    ],
+    Relieving: [
+      "Close the loop: write the thought and set it down",
+      "Put this away for 30 minutes",
+      "Do something light on purpose"
+    ],
+    Rest: [ "You are allowed to stop thinking about this today." ]
+  },
+
+  career: {
+    Productive: [
+      "Apply to one role or opportunity",
+      "Update one resume line",
+      "Send one message or follow-up"
+    ],
+    Stabilizing: [
+      "Eat something",
+      "Walk for 5 minutes",
+      {
+  text: "Ground your body: slow breath for 60 seconds",
+  action: "timer",
+  timer: {
+    seconds: 60,
+    title: "Slow breath",
+    help: "Inhale gently. Exhale longer."
+  }
+},
+
+    ],
+    Relieving: [
+      "Write the thought down and close it",
+      "Put this away for 30 minutes",
+      "Watch or read something light"
+    ],
+    Rest: [ "You are allowed to stop thinking about this today." ]
+  },
+
+  relationship: {
+    Productive: [
+  {
+    text: "Write one boundary you wish you had stated",
+    action: "write",
+    writer: {
+      type: "boundary",
+      saveKey: "atm_boundaries",
+      title: "Write the boundary",
+      help: "One honest sentence is enough.",
+      placeholder: "I wish I had said…",
+      prefill: "I wish I had said: "
+    }
+  },
+  {
+    text: "Send one kind message to a safe person (or draft it)",
+    action: "write",
+    writer: {
+      type: "draft_message",
+      saveKey: "atm_messages",
+      title: "Draft the message",
+      help: "Keep it short. You can choose to send it later—or not at all.",
+      placeholder: "Type your message…",
+      prefill: "Hey — I just wanted to say "
+    }
+  },
+  "Do one practical task you’ve been neglecting"
+],
+
+    Stabilizing: [
+      {
+  text: "Ground your body: slow breath for 60 seconds",
+  action: "timer",
+  timer: {
+    seconds: 60,
+    title: "Slow breath",
+    help: "Inhale gently. Exhale longer."
+  }
+},
+,
+      "Step outside for 5 minutes",
+      "Eat something small"
+    ],
+    Relieving: [
+  {
+    text: "Write: ‘What I can control is…’ (one line)",
+    action: "write",
+    writer: {
+      type: "control_line",
+      saveKey: "atm_lines",
+      title: "What I can control",
+      help: "One line. Keep it concrete.",
+      placeholder: "What I can control is…",
+      prefill: "What I can control is "
+    }
+  },
+  "Put this away for 30 minutes",
+  "Do something comforting but non-destructive"
+],
+
+    Rest: [ "You are allowed to stop replaying this today." ]
+  },
+
+  health: {
+    Productive: [
+      "Schedule one appointment / follow-up (or draft the call/text)",
+      {
+  text: "Write one question to ask a professional",
+  action: "write",
+  writer: {
+    type: "health_question",
+    saveKey: "atm_questions",
+    title: "Your question",
+    help: "One clear question is enough.",
+    placeholder: "What should I ask?",
+    prefill: "What should I ask about "
+  }
+},
+
+      "Do one small supportive habit today"
+    ],
+    Stabilizing: [
+      "Hydrate / eat something",
+      "Gentle movement for 5 minutes",
+      {
+  text: "Ground your body: slow breath for 60 seconds",
+  action: "timer",
+  timer: {
+    seconds: 60,
+    title: "Slow breath",
+    help: "Inhale gently. Exhale longer."
+  }
+},
+
+    ],
+    Relieving: [
+      "Write the fear down and set it aside",
+      "Put this away for 30 minutes",
+      "Do something light"
+    ],
+    Rest: [ "You are allowed to pause the analysis today." ]
+  },
+
+  unknown: {
+    Productive: [
+      "Pick the smallest next action you can do in 5 minutes",
+      "Do one task that reduces uncertainty",
+      "Write one sentence: ‘The next step is…’"
+    ],
+    Stabilizing: [
+      "Walk for 5 minutes",
+      "Eat / hydrate",
+      {
+  text: "Ground your body: slow breath for 60 seconds",
+  action: "timer",
+  timer: {
+    seconds: 60,
+    title: "Slow breath",
+    help: "Inhale gently. Exhale longer."
+  }
+},
+
+    ],
+    Relieving: [
+      "Put this away for 30 minutes",
+      "Do something light",
+      "Close the loop: write it and stop"
+    ],
+    Rest: [ "You are allowed to stop thinking about this today." ]
+  }
+};
+
+function selectLane(lane) {
+  state.lane = lane;
+
+  const key = state.mistakeKey || 'unknown';
+  const options = (STEPS[key] && STEPS[key][lane]) ? STEPS[key][lane] : STEPS.unknown[lane];
+
+  const headlineMap = {
+    Productive: "Move one piece. Not the whole board.",
+    Stabilizing: "Stability comes before clarity.",
+    Relieving: "Stop feeding the loop.",
+    Rest: "Rest on purpose."
+  };
+
+  const bodyMap = {
+    Productive: "Choose one small action and stop.",
+    Stabilizing: "You don’t need answers to steady yourself.",
+    Relieving: "Relief is allowed when it’s intentional.",
+    Rest: "Nothing bad happens if you pause."
+  };
+
+  document.getElementById("stepHeadline").innerText = headlineMap[lane] || "Next step";
+  document.getElementById("stepBody").innerText = bodyMap[lane] || "";
+
+  const ul = document.getElementById("stepList");
+  ul.innerHTML = "";
+
+  options.forEach(opt => {
+    const li = document.createElement("li");
+
+   if (typeof opt === "string") {
+  li.innerText = opt;
+  li.onclick = () => chooseAction(opt);
+} else {
+  li.innerText = opt.text;
+  li.onclick = () => handleAction(opt);
+}
+
+
+    ul.appendChild(li);
+  });
+
+  if (lane === "Rest" && options.length === 1) {
+    chooseAction(typeof options[0] === "string" ? options[0] : options[0].text);
+  }
+
+  go("step");
+}
+
+/* -------------------------
+   ACTIONABLE STEP HANDLERS
+-------------------------- */
+function handleAction(opt) {
+  chooseAction(opt.text);
+
+  if (opt.action === "write") {
+    openWriter(opt.writer);
+  }
+
+  if (opt.action === "timer") {
+    openTimer(
+      opt.timer?.seconds || 60,
+      opt.timer?.title || "Pause",
+      opt.timer?.help || ""
+    );
+  }
+}
+
+/* -------------------------
+   MODALS
+-------------------------- */
+function openModalText(text) {
+  document.getElementById("modalText").innerText = text;
+  document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+/* -------------------------
+   BOUNDARY (save locally)
+-------------------------- */
+function openBoundaryModal() {
+  document.getElementById("boundaryInput").value = "";
+  document.getElementById("boundaryModal").style.display = "flex";
+}
+
+function closeBoundaryModal() {
+  document.getElementById("boundaryModal").style.display = "none";
+}
+
+function saveBoundary() {
+  const text = document.getElementById("boundaryInput").value.trim();
+  if (!text) return;
+
+  const boundaries = JSON.parse(localStorage.getItem("atm_boundaries") || "[]");
+  boundaries.unshift({
+    text,
+    ts: new Date().toISOString(),
+    mistakeType: state.mistakeType || "Relationship"
+  });
+  localStorage.setItem("atm_boundaries", JSON.stringify(boundaries));
+
+  closeBoundaryModal();
+}
+
+/* -------------------------
+   JOURNAL / HISTORY
+-------------------------- */
+function getEntries() {
+  try { return JSON.parse(localStorage.getItem('atm_entries') || '[]'); }
+  catch { return []; }
+}
+function setEntries(entries) {
+  localStorage.setItem('atm_entries', JSON.stringify(entries));
+}
+
+function saveEntry() {
+  const thought = (document.getElementById('thought')?.value || '').trim();
+  const note = (document.getElementById('note')?.value || '').trim();
+  const intBefore = Number(document.getElementById('intBefore')?.value ?? 0);
+  const intAfter = Number(document.getElementById('intAfter')?.value ?? 0);
+
+  const entry = {
+    ts: new Date().toISOString(),
+    mistakeType: state.mistakeType || 'Unspecified',
+    lane: state.lane || 'Unspecified',
+    action: state.action || 'Unspecified',
+    thought,
+    note,
+    intBefore,
+    intAfter
+  };
+
+  const entries = getEntries();
+  entries.unshift(entry);
+  setEntries(entries);
+
+  // Clear note; keep thought for convenience
+  const noteEl = document.getElementById('note');
+  if (noteEl) noteEl.value = '';
+
+  go('history');
+}
+
+function renderHistory() {
+  const container = document.getElementById('historyList');
+  if (!container) return;
+
+  const entries = getEntries();
+  if (entries.length === 0) {
+    container.innerHTML = `<div class="historyItem"><div class="main">No saved moments yet.</div></div>`;
+    return;
+  }
+
+  container.innerHTML = entries.slice(0, 50).map(e => {
+    const when = new Date(e.ts).toLocaleString();
+    const thoughtLine = e.thought ? `Thought: “${escapeHtml(e.thought)}”<br>` : '';
+    const noteLine = e.note ? `Note: ${escapeHtml(e.note)}<br>` : '';
+    return `
+      <div class="historyItem">
+        <div class="meta">${when} • ${escapeHtml(e.mistakeType)} • ${escapeHtml(e.lane)}</div>
+        <div class="main">
+          ${thoughtLine}
+          Action: ${escapeHtml(e.action)}<br>
+          Intensity: ${e.intBefore} → ${e.intAfter}<br>
+          ${noteLine}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function clearHistory() {
+  localStorage.removeItem('atm_entries');
+  renderHistory();
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'","&#039;");
+}
+
+function getJournal() {
+  try {
+    return JSON.parse(localStorage.getItem('atm_journal') || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function renderJournal() {
+  const container = document.getElementById('journalList');
+  if (!container) return;
+
+  const entries = getJournal();
+  if (entries.length === 0) {
+    container.innerHTML =
+      `<div class="historyItem"><div class="main">No journal entries yet.</div></div>`;
+    return;
+  }
+
+  container.innerHTML = entries.map(e => {
+    const when = new Date(e.ts).toLocaleString();
+    return `
+      <div class="historyItem">
+        <div class="meta">${when}</div>
+        <div class="main">${escapeHtml(e.text)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function clearJournal() {
+  localStorage.removeItem('atm_journal');
+  renderJournal();
+}
+
+
+/* -------------------------
+   ANCHORS
+-------------------------- */
+const DEFAULT_ANCHORS = [
+  "Urgency is not information.",
+  "One step is enough.",
+  "Pressure is not proof.",
+  "I can’t rerun the past. I can act now.",
+  "This isn’t permanent — it’s uncomfortable."
+];
+
+let lastAnchorIndex = -1;
+
+function getAnchors() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('atm_anchors') || 'null');
+    if (Array.isArray(saved) && saved.length > 0) return saved;
+  } catch {}
+  return DEFAULT_ANCHORS.slice();
+}
+function setAnchors(list) {
+  localStorage.setItem('atm_anchors', JSON.stringify(list));
+}
+
+function renderAnchors() {
+  const listEl = document.getElementById('anchorsList');
+  if (!listEl) return;
+
+  const anchors = getAnchors();
+  listEl.innerHTML = anchors.map((a, idx) => `
+    <div class="historyItem">
+      <div class="main">${escapeHtml(a)}</div>
+      <button class="secondary" onclick="deleteAnchor(${idx})">Delete</button>
+    </div>
+  `).join('');
+}
+
+function addAnchor() {
+  const input = document.getElementById('anchorInput');
+  if (!input) return;
+
+  const text = (input.value || '').trim();
+  if (text.length < 3) return;
+
+  const anchors = getAnchors();
+  anchors.unshift(text);
+  setAnchors(anchors);
+  input.value = '';
+  renderAnchors();
+}
+
+function deleteAnchor(idx) {
+  const anchors = getAnchors();
+  anchors.splice(idx, 1);
+  setAnchors(anchors.length ? anchors : DEFAULT_ANCHORS.slice());
+  renderAnchors();
+}
+
+function resetAnchors() {
+  setAnchors(DEFAULT_ANCHORS.slice());
+  renderAnchors();
+}
+
+function showAnchor(forceNew = false) {
+  const anchors = getAnchors();
+  if (!anchors.length) return;
+
+  let idx = lastAnchorIndex;
+
+  if (forceNew || idx < 0) {
+    idx = Math.floor(Math.random() * anchors.length);
+    if (anchors.length > 1 && idx === lastAnchorIndex) idx = (idx + 1) % anchors.length;
+  }
+
+  lastAnchorIndex = idx;
+
+  const display = document.getElementById('anchorDisplay');
+  if (display) display.innerText = anchors[idx];
+}
+</script>
+
+</body>
+</html>
